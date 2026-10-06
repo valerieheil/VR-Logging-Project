@@ -1,14 +1,19 @@
 // ============================================================
-//  SessionController.cs
-//  Simple keyboard-only controller for testing on desktop.
-//  Uses the new Unity Input System package.
+//  SessionController.cs   (v2)
+//  Start / export sessions from the Quest controllers AND (for
+//  desktop testing) the keyboard.
 //
-//  HOW TO USE:
-//    1. Create an empty GameObject, name it "SessionController"
-//    2. Attach this script to it
-//    3. During play:
-//         - Press A to EXPORT data
-//         - Press X to start a NEW session
+//    Right controller A  (or keyboard A) -> EXPORT the current session
+//    Left  controller X  (or keyboard X) -> start a NEW session
+//                                          (the running one is exported first)
+//    Keyboard M                          -> add a "Marker" event (testing)
+//
+//  v2 changes:
+//   * Controller buttons via OVRInput (as described in the setup guide);
+//     before, Update() returned early on the headset because there is
+//     no keyboard, so only the keyboard path existed in this script.
+//   * Exports are idempotent (VRLogger skips a second export), so
+//     OnDestroy + OnApplicationQuit no longer write the session twice.
 // ============================================================
 
 using UnityEngine;
@@ -16,7 +21,10 @@ using UnityEngine.InputSystem;
 
 public class SessionController : MonoBehaviour
 {
-    [Header("Keyboard Controls")]
+    [Header("Controller Controls (Meta Quest)")]
+    public bool enableControllerInput = true;
+
+    [Header("Keyboard Controls (Editor testing)")]
     public bool enableKeyboardExport = true;
     public bool enableKeyboardNewSession = true;
 
@@ -26,37 +34,41 @@ public class SessionController : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("[SessionController] Started. Press A to export, X for new session.");
+        Debug.Log("[SessionController] Started. A = export, X = new session.");
 
         if (VRLogger.Instance == null)
             Debug.LogWarning("[SessionController] VRLogger.Instance is null at Start. Be sure a VRLogger exists in the scene.");
-
-        if (Keyboard.current == null)
-            Debug.LogError("[SessionController] No keyboard detected by the new Input System!");
     }
 
     private void Update()
     {
-        if (Keyboard.current == null)
-            return;
-
-        if (enableKeyboardExport && Keyboard.current.aKey.wasPressedThisFrame)
+        // ── Quest controllers ────────────────────────────────
+        if (enableControllerInput)
         {
-            Debug.Log("[SessionController] Keyboard A pressed. Exporting data.");
+            if (OVRInput.GetDown(OVRInput.Button.One))      // A (right)
+                ExportAndEnd();
+            if (OVRInput.GetDown(OVRInput.Button.Three))    // X (left)
+                StartNewSession();
+        }
+
+        // ── Keyboard (editor) ────────────────────────────────
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        if (enableKeyboardExport && kb.aKey.wasPressedThisFrame)
             ExportAndEnd();
-        }
 
-        if (enableKeyboardNewSession && Keyboard.current.xKey.wasPressedThisFrame)
-        {
-            Debug.Log("[SessionController] Keyboard X pressed. Starting new session.");
+        if (enableKeyboardNewSession && kb.xKey.wasPressedThisFrame)
             StartNewSession();
-        }
+
+        if (kb.mKey.wasPressedThisFrame)
+            VRLogger.Instance?.LogMarker("ManualMarker");
     }
 
     private void OnDestroy()
     {
         if (exportOnDestroy && VRLogger.Instance != null && VRLogger.Instance.EventCount > 0)
-            VRLogger.Instance.ExportData();
+            VRLogger.Instance.ExportData();   // no-op if already exported
     }
 
     public void ExportAndEnd()
@@ -66,11 +78,13 @@ public class SessionController : MonoBehaviour
             Debug.LogWarning("[SessionController] VRLogger not found in scene!");
             return;
         }
+        Debug.Log("[SessionController] Export requested.");
         VRLogger.Instance.ExportData();
     }
 
     public void StartNewSession()
     {
+        Debug.Log("[SessionController] New session requested.");
         VRLogger.Instance?.StartSession();
     }
 }

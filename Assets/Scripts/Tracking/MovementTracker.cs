@@ -37,6 +37,15 @@ public class MovementTracker : MonoBehaviour
              "Set to 0 to always log.")]
     public float minimumMoveDelta = 0.01f;  // Avoids logging when completely still
 
+    [Header("Hands (v2)")]
+    [Tooltip("RECOMMENDED for analysis: also log hand positions when the head is still " +
+             "(e.g. patient stands and reaches for a bottle). Off = v1 behaviour, where hands " +
+             "are only logged together with a head movement.")]
+    public bool trackHandsIndependently = false;
+
+    [Tooltip("Minimum hand movement (m) to log a hand sample when the head is still.")]
+    public float handMinimumMoveDelta = 0.01f;
+
     // ── Internal state ───────────────────────────────────────
     private float   _timer = 0f;
     private Vector3 _lastHeadPosition;
@@ -44,6 +53,9 @@ public class MovementTracker : MonoBehaviour
 
     // Cumulative distance walked during session
     private float _totalDistance = 0f;
+
+    // Last logged hand positions (v2, for independent hand logging)
+    private Vector3 _lastLeftHand, _lastRightHand;
 
     // ── Unity lifecycle ──────────────────────────────────────
 
@@ -87,7 +99,11 @@ public class MovementTracker : MonoBehaviour
         float delta = Vector3.Distance(currentHead, _lastHeadPosition);
 
         // Skip if barely moved (player standing still)
-        if (delta < minimumMoveDelta) return;
+        if (delta < minimumMoveDelta)
+        {
+            if (trackHandsIndependently) LogHandsIfMoved();
+            return;
+        }
 
         // Accumulate total distance
         _totalDistance += delta;
@@ -128,6 +144,25 @@ public class MovementTracker : MonoBehaviour
         }
 
         _lastHeadPosition = currentHead;
+        if (leftHandTransform  != null) _lastLeftHand  = leftHandTransform.position;
+        if (rightHandTransform != null) _lastRightHand = rightHandTransform.position;
+    }
+
+    // v2: hand samples while the head is still
+    private void LogHandsIfMoved()
+    {
+        if (leftHandTransform != null &&
+            Vector3.Distance(leftHandTransform.position, _lastLeftHand) >= handMinimumMoveDelta)
+        {
+            _lastLeftHand = leftHandTransform.position;
+            VRLogger.Instance.Log(new LogEvent("LeftHandPos", "", VRLogger.Instance.SessionTime, _lastLeftHand));
+        }
+        if (rightHandTransform != null &&
+            Vector3.Distance(rightHandTransform.position, _lastRightHand) >= handMinimumMoveDelta)
+        {
+            _lastRightHand = rightHandTransform.position;
+            VRLogger.Instance.Log(new LogEvent("RightHandPos", "", VRLogger.Instance.SessionTime, _lastRightHand));
+        }
     }
 
     // ── Public utility ───────────────────────────────────────

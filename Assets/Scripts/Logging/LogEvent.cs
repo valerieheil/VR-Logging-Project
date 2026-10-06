@@ -5,6 +5,7 @@
 //  and sends it to VRLogger.
 // ============================================================
 
+using System.Globalization;
 using UnityEngine;
 
 [System.Serializable]          // Makes it visible in Inspector & serializable to JSON
@@ -58,10 +59,14 @@ public class LogEvent
     //  CSV row — one line for this event
     //  Column order matches VRLogger.CSV_HEADER
     // ────────────────────────────────────────────────────────
+    //  v2: formatted with the INVARIANT culture so decimals are always
+    //  written with '.' regardless of the headset/PC language setting.
+    //  (Before, a German-locale device would write "3,420" and an
+    //  English one "3.420" for the same value -> not reproducible.)
     public string ToCSVRow()
     {
-        return $"{eventType};{objectID};{timestamp:F3};" +
-               $"{posX:F3};{posY:F3};{posZ:F3};" +
-               $"{duration:F3};{extra}";
+        return string.Format(CultureInfo.InvariantCulture,
+               "{0};{1};{2:F3};{3:F3};{4:F3};{5:F3};{6:F3};{7}",
+               eventType, objectID, timestamp, posX, posY, posZ, duration, extra);
     }
 }

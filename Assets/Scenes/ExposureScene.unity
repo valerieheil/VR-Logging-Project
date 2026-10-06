@@ -1607,11 +1607,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13866f67339c99d42bfa89ccfaa6b10e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SessionController
-  exportButton: 1
-  newSessionButton: 4
+  enableKeyboardExport: 1
+  enableKeyboardNewSession: 1
   exportOnDestroy: 1
-  showNotifications: 1
-  notificationDuration: 2
 --- !u!1001 &1210960126
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2001,6 +1999,37 @@ Transform:
   m_Children:
   - {fileID: 2121298248}
   m_Father: {fileID: 235287792}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1888862982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1888862983}
+  m_Layer: 0
+  m_Name: testobject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1888862983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888862982}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.2, y: 0.14, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1892227958
 GameObject:
@@ -2684,3 +2713,4 @@ SceneRoots:
   - {fileID: 447108919}
   - {fileID: 777307648}
   - {fileID: 1087062915}
+  - {fileID: 1888862983}
