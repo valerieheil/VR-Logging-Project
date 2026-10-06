@@ -119,6 +119,63 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &50495164
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6649215788092039827, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_Name
+      value: '[BuildingBlock] NeutralBottle'
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.9911352
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.1071513
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.4384408
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019577088265463405, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: afc09cf9d49ef5e4f98a30153a15c27c, type: 3}
 --- !u!1 &184553771 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
@@ -138,6 +195,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrabTracker
   objectLabel: 
   isTriggerObject: 1
+--- !u!114 &184553780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184553771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d944aecd259444ab8687da88f5075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StimulusObject
+  stimulusID: BeerBottle1
+  category: 0
+  moveLogThreshold: 0.05
+  moveCheckInterval: 0.25
 --- !u!1 &235287791
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,6 +539,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
       insertIndex: -1
       addedObject: {fileID: 184553779}
+    - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 184553780}
   m_SourcePrefab: {fileID: 100100000, guid: d57084173682ceb48ac2a6302933da38, type: 3}
 --- !u!1001 &447108919
 PrefabInstance:
@@ -530,8 +606,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 447108921}
   m_SourcePrefab: {fileID: 100100000, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+--- !u!1 &447108920 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+  m_PrefabInstance: {fileID: 447108919}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &447108921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447108920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d944aecd259444ab8687da88f5075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StimulusObject
+  stimulusID: BeerBottle2
+  category: 0
+  moveLogThreshold: 0.05
+  moveCheckInterval: 0.25
 --- !u!1 &514537390
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,6 +666,8 @@ MonoBehaviour:
   rightHandTransform: {fileID: 235287792}
   logInterval: 0.1
   minimumMoveDelta: 0.01
+  trackHandsIndependently: 1
+  handMinimumMoveDelta: 0.01
 --- !u!4 &514537392
 Transform:
   m_ObjectHideFlags: 0
@@ -979,8 +1081,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 777307650}
   m_SourcePrefab: {fileID: 100100000, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+--- !u!1 &777307649 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+  m_PrefabInstance: {fileID: 777307648}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &777307650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777307649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d944aecd259444ab8687da88f5075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StimulusObject
+  stimulusID: BeerBottle3
+  category: 0
+  moveLogThreshold: 0.05
+  moveCheckInterval: 0.25
 --- !u!1 &802843033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5241215271433471960, guid: 9aa57e50e18d174469da477e32f78749, type: 3}
@@ -1511,8 +1637,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1087062917}
   m_SourcePrefab: {fileID: 100100000, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+--- !u!1 &1087062916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+  m_PrefabInstance: {fileID: 1087062915}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1087062917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1087062916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d944aecd259444ab8687da88f5075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StimulusObject
+  stimulusID: BeerBottle4
+  category: 0
+  moveLogThreshold: 0.05
+  moveCheckInterval: 0.25
 --- !u!1 &1186094296
 GameObject:
   m_ObjectHideFlags: 0
@@ -1543,11 +1693,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VRLogger
   sessionID: 
+  participantID: 
+  condition: 
+  therapistID: 
+  sessionNumberOverride: 0
+  useConfigFile: 1
   exportFolder: VRLogs
   exportJSON: 1
   exportCSV: 1
   exportFilteredByCategory: 1
   autoExportOnQuit: 1
+  exportFeaturesAndSummary: 1
+  featureSettings:
+    minGazeEpisodeSec: 0.1
+    proximityRadiusM: 1
+    withinSessionEpochs: 3
+    minBiasDenominatorSec: 5
 --- !u!4 &1186094298
 Transform:
   m_ObjectHideFlags: 0
@@ -1607,6 +1768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13866f67339c99d42bfa89ccfaa6b10e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SessionController
+  enableControllerInput: 1
   enableKeyboardExport: 1
   enableKeyboardNewSession: 1
   exportOnDestroy: 1
@@ -1999,37 +2161,6 @@ Transform:
   m_Children:
   - {fileID: 2121298248}
   m_Father: {fileID: 235287792}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1888862982
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1888862983}
-  m_Layer: 0
-  m_Name: testobject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1888862983
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888862982}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2, y: 0.14, z: 0.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1892227958
 GameObject:
@@ -2694,8 +2825,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 651494824600628847}
   m_SourcePrefab: {fileID: 100100000, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+--- !u!1 &651494824600628846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6649215788092039827, guid: d57084173682ceb48ac2a6302933da38, type: 3}
+  m_PrefabInstance: {fileID: 651494824600628845}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &651494824600628847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 651494824600628846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d944aecd259444ab8687da88f5075a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StimulusObject
+  stimulusID: BeerBottle0
+  category: 0
+  moveLogThreshold: 0.05
+  moveCheckInterval: 0.25
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2713,4 +2868,4 @@ SceneRoots:
   - {fileID: 447108919}
   - {fileID: 777307648}
   - {fileID: 1087062915}
-  - {fileID: 1888862983}
+  - {fileID: 50495164}
