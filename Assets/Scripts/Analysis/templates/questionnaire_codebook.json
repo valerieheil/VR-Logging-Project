@@ -1,0 +1,31 @@
+{
+  "_README": "One entry per instrument. scoring: single | prescored | sum | mean. sum = prorated sum (mean of answered items x items) if <= max_missing items are missing. reverse_items are recoded as (min+max)-value. Optional rci: {sd, reliability} from a normative sample enables the Reliable Change Index. ALWAYS verify item counts, ranges and reverse-keyed items against the original publication / the validated German version you actually administer.",
+
+  "VAS_craving": {
+    "label": "Craving, visual analogue scale 0-100",
+    "scoring": "single", "items": 1, "min": 0, "max": 100,
+    "higher_means": "stronger craving"
+  },
+  "SUDS": {
+    "label": "Subjective Units of Distress 0-100",
+    "scoring": "single", "items": 1, "min": 0, "max": 100,
+    "higher_means": "more distress"
+  },
+  "AUQ": {
+    "label": "Alcohol Urge Questionnaire (Bohn, Krahn & Staehler, 1995)",
+    "scoring": "sum", "items": 8, "min": 1, "max": 7, "max_missing": 1,
+    "reverse_items": [],
+    "_TODO": "Enter the reverse-keyed item numbers of the version you use before analysing real data.",
+    "higher_means": "stronger urge"
+  },
+  "IPQ": {
+    "label": "Igroup Presence Questionnaire (Schubert et al., 2001) - enter the scored total/subscale",
+    "scoring": "prescored", "min": 0, "max": 6,
+    "higher_means": "more presence"
+  },
+  "SSQ_total": {
+    "label": "Simulator Sickness Questionnaire total (Kennedy et al., 1993) - weighted total score",
+    "scoring": "prescored", "min": 0, "max": 300,
+    "higher_means": "more cybersickness"
+  }
+}

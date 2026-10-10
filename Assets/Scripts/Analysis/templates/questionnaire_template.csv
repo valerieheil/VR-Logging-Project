@@ -1,0 +1,13 @@
+participant_id;session_number;timepoint;instrument;item;value
+P001;1;pre;VAS_craving;;35
+P001;1;post;VAS_craving;;52
+P001;1;pre;AUQ;1;3
+P001;1;pre;AUQ;2;2
+P001;1;pre;AUQ;3;4
+P001;1;pre;AUQ;4;3
+P001;1;pre;AUQ;5;2
+P001;1;pre;AUQ;6;3
+P001;1;pre;AUQ;7;2
+P001;1;pre;AUQ;8;3
+P001;1;post;IPQ;;4,2
+P001;1;post;SSQ_total;;18,7
