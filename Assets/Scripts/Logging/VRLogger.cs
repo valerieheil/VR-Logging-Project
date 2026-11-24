@@ -310,6 +310,10 @@ public class VRLogger : MonoBehaviour
                    if (cfg.sessionNumber > 0)                    m.sessionNumber = cfg.sessionNumber;
                    Debug.Log($"[VRLogger] session_config.json loaded (participant {m.participantID}).");
                }
+               else
+               {
+                   Debug.LogWarning($"[VRLogger] useConfigFile is on, but no config file at {cfgPath} - using Inspector values.");
+               }
            }
            catch (Exception e)
            {

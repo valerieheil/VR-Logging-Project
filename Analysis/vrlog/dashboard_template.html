@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VR exposure progress</title>
+<style>
+:root {
+  --paper: #F4F7F8; --surface: #FFFFFF; --ink: #1F3A4D; --muted: #5B6B78; --rule: #D5DCE1; --rule-soft: #E8EDF0;
+  --trigger: #B5651D; --neutral: #2E7D7A; --quest: #4A5D8A; --other: #7A8792; --flag: #A23B2A;
+  --select: #E6EEF4; --select-ink: #1F3A4D;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark;
+    --paper: #12191E; --surface: #1A242B; --ink: #DCE6EC; --muted: #93A3AE; --rule: #33424C; --rule-soft: #26323A;
+    --trigger: #E0904A; --neutral: #4DB3AD; --quest: #8FA3D6; --other: #93A3AE; --flag: #E07A66;
+    --select: #243641; --select-ink: #FFFFFF; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font); color: var(--ink); background: var(--paper); font-size: 15px; line-height: 1.45;
+       font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--quest); outline-offset: 2px; }
+
+.app { display: grid; grid-template-columns: 250px 1fr; min-height: 100%; }
+
+/* ── patient rail ─────────────────────────── */
+.rail { background: var(--surface); border-right: 1px solid var(--rule); padding: 1.4rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.rail h1 { font-size: 1.05rem; font-weight: 600; margin: 0 0 .15rem; }
+.rail .gen { color: var(--muted); font-size: .8rem; margin: 0 0 1.1rem; }
+.rail input { width: 100%; padding: .5rem .65rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper); color: var(--ink); font: inherit; }
+.plist { list-style: none; margin: .8rem 0 0; padding: 0; }
+.plist button { width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: .55rem .65rem; cursor: pointer; display: grid; gap: .05rem; }
+.plist button:hover { background: var(--rule-soft); }
+.plist button[aria-current="true"] { background: var(--select); color: var(--select-ink); }
+.plist .code { font-weight: 600; }
+.plist .meta { color: var(--muted); font-size: .8rem; }
+.empty { color: var(--muted); font-size: .9rem; padding: .5rem .65rem; }
+
+/* ── main ──────────────────────────────────── */
+main { padding: 1.6rem 2.2rem 3rem; min-width: 0; }
+.phead { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+.phead h2 { font-size: 2.1rem; font-weight: 600; letter-spacing: -.01em; margin: 0; line-height: 1.1; }
+.phead p { margin: .3rem 0 0; color: var(--muted); }
+.btn { border: 1px solid var(--rule); background: var(--surface); padding: .45rem .9rem; border-radius: 6px; cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 .7rem; }
+section { margin-top: 2rem; }
+.hint { color: var(--muted); font-size: .85rem; margin: -.4rem 0 .8rem; max-width: 70ch; }
+
+/* ── session strip (timeline) ──────────────── */
+.strip { display: flex; align-items: stretch; overflow-x: auto; padding: .4rem 0 .2rem; position: relative; }
+.strip::before { content: ""; position: absolute; left: 1rem; right: 1rem; top: 1.15rem; height: 2px; background: var(--rule); }
+.node { position: relative; flex: 1 0 96px; max-width: 160px; background: none; border: 0; cursor: pointer; padding: 0 .3rem; text-align: center; }
+.node .dot { display: block; width: 16px; height: 16px; margin: .35rem auto .45rem; border-radius: 50%; background: var(--surface); border: 2px solid var(--muted); position: relative; z-index: 1; }
+.node[aria-pressed="true"] .dot { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 4px var(--select); }
+.node .s { display: block; font-weight: 600; }
+.node .d { display: block; color: var(--muted); font-size: .8rem; }
+.node .f { display: block; color: var(--flag); font-size: .75rem; min-height: 1.1em; }
+
+/* ── flowsheet ────────────────────────────── */
+.sheetwrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+table.sheet { border-collapse: collapse; width: 100%; min-width: 640px; }
+.sheet th, .sheet td { padding: .42rem .7rem; border-bottom: 1px solid var(--rule-soft); text-align: right; white-space: nowrap; }
+.sheet thead th { font-weight: 600; border-bottom: 2px solid var(--rule); vertical-align: bottom; }
+.sheet thead th button { background: none; border: 0; cursor: pointer; padding: 0; font-weight: 600; }
+.sheet thead th .d { display: block; color: var(--muted); font-weight: 400; font-size: .78rem; }
+.sheet th.m { text-align: left; font-weight: 400; position: sticky; left: 0; background: var(--surface); z-index: 1; min-width: 15rem; }
+.sheet tr.grp th { text-align: left; font-weight: 600; padding-top: .9rem; color: var(--muted); font-size: .85rem; background: var(--surface); position: sticky; left: 0; }
+.sheet .sel { background: var(--select); color: var(--select-ink); }
+.sheet .na { color: var(--muted); }
+.mark { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .5rem; vertical-align: .05rem; }
+.unit { color: var(--muted); font-size: .8rem; margin-left: .35rem; }
+.help { border: 1px solid var(--rule); background: none; border-radius: 50%; width: 1.25rem; height: 1.25rem; font-size: .72rem; line-height: 1; cursor: pointer; margin-left: .35rem; color: var(--muted); padding: 0; }
+.help[aria-expanded="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+tr.def td { text-align: left; white-space: normal; color: var(--muted); font-size: .86rem; background: var(--paper); }
+.rc { font-size: .7rem; color: var(--quest); margin-left: .2rem; vertical-align: super; cursor: help; }
+td.spark { width: 130px; }
+
+/* ── detail ───────────────────────────────── */
+.detail { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem; }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1.1rem 1.2rem; min-width: 0; overflow-x: auto; }
+table.change { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.change th, .change td { padding: .35rem .4rem; border-bottom: 1px solid var(--rule-soft); text-align: right; white-space: nowrap; }
+.change th:first-child, .change td:first-child { text-align: left; white-space: normal; }
+.change thead th { font-weight: 600; border-bottom: 2px solid var(--rule); }
+.delta { color: var(--muted); }
+.flags { margin: 0; padding-left: 1.1rem; }
+.flags li { color: var(--flag); margin-bottom: .3rem; }
+.ok { color: var(--muted); margin: 0; }
+
+/* ── charts ───────────────────────────────── */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.2rem; }
+.chart h4 { margin: 0 0 .2rem; font-size: .95rem; font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: .9rem; font-size: .8rem; color: var(--muted); margin-bottom: .2rem; }
+.legend i { display: inline-block; width: .9rem; height: 3px; vertical-align: middle; margin-right: .35rem; border-radius: 2px; }
+svg text { fill: var(--muted); font-family: var(--font); font-size: 11px; }
+svg .grid { stroke: var(--rule-soft); }
+svg .axis { stroke: var(--rule); }
+svg .selline { stroke: var(--ink); stroke-dasharray: 3 3; opacity: .45; }
+svg .pt { cursor: pointer; }
+
+footer { margin-top: 2.5rem; color: var(--muted); font-size: .82rem; max-width: 80ch; border-top: 1px solid var(--rule); padding-top: .9rem; }
+footer p { margin: 0 0 .5rem; }
+
+@media (max-width: 900px) {
+  .charts { grid-template-columns: 1fr; }
+  .app { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .plist { display: flex; gap: .3rem; overflow-x: auto; }
+  .plist button { width: auto; white-space: nowrap; }
+  main { padding: 1.2rem 1rem 2rem; }
+  .detail { grid-template-columns: 1fr; }
+}
+@media print {
+  .rail, .btn, .help { display: none; }
+  .app { display: block; }
+  main { padding: 0; }
+  body { background: #fff; font-size: 12px; }
+  section, .panel, .chart { break-inside: avoid; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <h1>VR exposure progress</h1>
+    <p class="gen" id="gen"></p>
+    <label for="q" class="gen" style="margin:0 0 .3rem;display:block">Find a patient code</label>
+    <input id="q" type="search" autocomplete="off" placeholder="e.g. P001">
+    <ul class="plist" id="plist"></ul>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+/* ── helpers ─────────────────────────────── */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtCache = {};
+const fmt = (v, d) => {
+  if (v === null || v === undefined || Number.isNaN(v)) return "–";
+  const f = fmtCache[d] || (fmtCache[d] = new Intl.NumberFormat(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }));
+  return f.format(v);
+};
+const signed = (v, d) => v === null ? "–" : (v > 0 ? "+" : v < 0 ? "−" : "±") + fmt(Math.abs(v), d);
+const dateFmt = s => {
+  if (!s) return "";
+  const t = new Date(s.replace(" ", "T"));
+  return isNaN(t) ? s : t.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+};
+const colorFor = key => key.startsWith("q_") ? "--quest" : key.includes("neutral") ? "--neutral"
+  : (key.startsWith("session") || key.startsWith("head")) ? "--other" : "--trigger";
+
+const state = { pid: null, sel: 0, open: new Set() };
+const pids = DATA ? Object.keys(DATA.patients).sort() : [];
+const metric = Object.fromEntries((DATA?.metrics || []).map(m => [m.key, m]));
+
+/* ── patient rail ────────────────────────── */
+function renderRail() {
+  const q = $("#q").value.trim().toLowerCase();
+  const list = pids.filter(p => p.toLowerCase().includes(q));
+  $("#plist").innerHTML = list.length ? list.map(p => {
+    const ss = DATA.patients[p].sessions, last = ss[ss.length - 1];
+    return `<li><button data-pid="${esc(p)}" aria-current="${p === state.pid}">
+      <span class="code">${esc(p)}</span>
+      <span class="meta">${ss.length} session${ss.length === 1 ? "" : "s"}, last ${esc(dateFmt(last?.date))}</span></button></li>`;
+  }).join("") : `<li class="empty">No patient code matches “${esc(q)}”.</li>`;
+}
+$("#plist").addEventListener("click", e => {
+  const b = e.target.closest("button[data-pid]");
+  if (b) location.hash = b.dataset.pid;
+});
+$("#q").addEventListener("input", renderRail);
+
+/* ── main view ───────────────────────────── */
+function render() {
+  const main = $("#main");
+  if (!DATA || !pids.length) {
+    main.innerHTML = `<div class="panel"><h3>No sessions found</h3>
+      <p class="ok">Run the pipeline with the VRLogs folder from the headset to fill this dashboard:<br>
+      <code>python run_pipeline.py --logs C:\\VRLogs --out C:\\VRResults</code></p></div>`;
+    return;
+  }
+  const P = DATA.patients[state.pid];
+  const S = P.sessions;
+  state.sel = Math.max(0, Math.min(state.sel, S.length - 1));
+  const s = S[state.sel];
+
+  main.innerHTML = `
+    <div class="phead">
+      <div><h2>${esc(state.pid)}</h2>
+        <p>${S.length} VR session${S.length === 1 ? "" : "s"} from ${esc(dateFmt(S[0].date))} to ${esc(dateFmt(S[S.length - 1].date))}</p></div>
+      <button class="btn" onclick="window.print()">Print this page</button>
+    </div>
+
+    <section aria-label="Sessions">
+      <div class="strip" role="toolbar" aria-label="Choose a session">${S.map((x, i) => `
+        <button class="node" data-i="${i}" aria-pressed="${i === state.sel}">
+          <span class="dot"></span><span class="s">Session ${x.n}</span>
+          <span class="d">${esc(dateFmt(x.date))}</span>
+          <span class="f">${x.flags.length ? x.flags.length + " note" + (x.flags.length > 1 ? "s" : "") : ""}</span>
+        </button>`).join("")}</div>
+    </section>
+
+    <section>
+      <h3>All sessions</h3>
+      <p class="hint">Each row is one measure, each column one session. Select a session above or in the column header to see its details below. The marker colour shows what a measure refers to: amber alcohol objects, teal neutral objects, blue questionnaires.</p>
+      <div class="sheetwrap"><table class="sheet">${sheet(S)}</table></div>
+    </section>
+
+    <section>
+      <h3>Session ${s.n} on ${esc(dateFmt(s.date))}${s.condition ? `, ${esc(s.condition)}` : ""}</h3>
+      <div class="detail">
+        <div class="panel">${changeTable(S, state.sel)}</div>
+        <div>
+          <div class="panel chart" style="margin-bottom:1.2rem">${withinSession(s)}</div>
+          <div class="panel"><h3>Data notes</h3>${s.flags.length
+            ? `<ul class="flags">${s.flags.map(f => `<li>${esc(f)}</li>`).join("")}</ul>`
+            : `<p class="ok">No data issues detected for this session.</p>`}</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Trends across sessions</h3>
+      <div class="charts" id="charts"></div>
+    </section>
+
+    <footer>
+      <p>These values are descriptive indicators recorded automatically during VR exposure. They are not validated diagnostic measures; read them together with clinical judgement and the patient’s own report. “Looking” is based on head direction, as the headset has no eye tracking. A “reliable change” mark appears only for questionnaires with known measurement error (Jacobson &amp; Truax, 1991).</p>
+      <p>Generated ${esc(DATA.generated)} by vrlog ${esc(DATA.version)}${DATA.source ? ` from ${esc(DATA.source)}` : ""}. Contains pseudonymised patient data: keep this file on the clinic computer.</p>
+    </footer>`;
+
+  drawCharts(S);
+}
+
+function sheet(S) {
+  const head = `<thead><tr><th class="m">Measure</th>${S.map((x, i) =>
+    `<th class="${i === state.sel ? "sel" : ""}"><button data-i="${i}" aria-label="Show session ${x.n}">S${x.n}</button><span class="d">${esc(dateFmt(x.date))}</span></th>`).join("")}<th>Trend</th></tr></thead>`;
+  let body = "<tbody>";
+  for (const g of DATA.groups) {
+    body += `<tr class="grp"><th colspan="${S.length + 2}">${esc(g)}</th></tr>`;
+    for (const m of DATA.metrics.filter(m => m.group === g)) {
+      const open = state.open.has(m.key);
+      body += `<tr><th class="m"><span class="mark" style="background:var(${colorFor(m.key)})"></span>${esc(m.label)}<span class="unit">${esc(m.unit)}</span>
+        <button class="help" data-help="${esc(m.key)}" aria-expanded="${open}" aria-label="What does ${esc(m.label)} mean?">?</button></th>`;
+      S.forEach((x, i) => {
+        const v = x.values[m.key], rel = x.reliable[m.key];
+        body += `<td class="${i === state.sel ? "sel" : ""} ${v === null ? "na" : ""}">${fmt(v, m.dec)}${rel && rel !== "no reliable change"
+          ? `<span class="rc" title="${esc(rel)} compared with the first session">R</span>` : ""}</td>`;
+      });
+      body += `<td class="spark">${spark(S.map(x => x.values[m.key]), state.sel, m.key)}</td></tr>`;
+      if (open) body += `<tr class="def"><td colspan="${S.length + 2}">${esc(m.help)}</td></tr>`;
+    }
+  }
+  return head + body + "</tbody>";
+}
+
+function spark(vals, sel, key) {
+  const W = 120, H = 26, p = 4, ok = vals.map((v, i) => [i, v]).filter(d => d[1] !== null);
+  if (ok.length < 2) return `<span class="na">–</span>`;
+  const lo = Math.min(...ok.map(d => d[1])), hi = Math.max(...ok.map(d => d[1]));
+  const x = i => p + (W - 2 * p) * (vals.length === 1 ? .5 : i / (vals.length - 1));
+  const y = v => hi === lo ? H / 2 : H - p - (H - 2 * p) * (v - lo) / (hi - lo);
+  const col = `var(${colorFor(key)})`;
+  const path = ok.map((d, k) => `${k ? "L" : "M"}${x(d[0]).toFixed(1)},${y(d[1]).toFixed(1)}`).join("");
+  const s = vals[sel];
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path d="${path}" fill="none" stroke="${col}" stroke-width="1.6"/>${
+    s !== null && s !== undefined ? `<circle cx="${x(sel)}" cy="${y(s)}" r="3.2" fill="${col}"/>` : ""}</svg>`;
+}
+
+function changeTable(S, i) {
+  const s = S[i], prev = S[i - 1], first = S[0];
+  const d = (a, b) => (a === null || a === undefined || b === null || b === undefined) ? null : a - b;
+  let rows = "";
+  for (const g of DATA.groups) for (const m of DATA.metrics.filter(m => m.group === g)) {
+    const v = s.values[m.key];
+    rows += `<tr><td><span class="mark" style="background:var(${colorFor(m.key)})"></span>${esc(m.label)}</td>
+      <td>${fmt(v, m.dec)}</td>
+      <td class="delta">${prev ? signed(d(v, prev.values[m.key]), m.dec) : "–"}</td>
+      <td class="delta">${i > 0 ? signed(d(v, first.values[m.key]), m.dec) : "–"}</td></tr>`;
+  }
+  return `<h3>Compared with earlier sessions</h3>
+    <table class="change"><thead><tr><th>Measure</th><th>This session</th>
+      <th>Since ${prev ? "S" + prev.n : "previous"}</th><th>Since S${first.n}</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function withinSession(s) {
+  const g = s.epochs.gaze, p = s.epochs.prox;
+  if ([...g, ...p].every(v => v === null)) return `<h3>Within this session</h3><p class="ok">No within-session data for this session.</p>`;
+  const all = [...g, ...p].filter(v => v !== null), hi = niceCeil(Math.max(5, ...all) * 1.15);
+  const W = 360, H = 170, L = 34, B = 26, T = 10, bw = 30, gap = 10;
+  const groups = ["Beginning", "Middle", "End"];
+  const gx = k => L + 20 + k * ((W - L - 30) / 3);
+  const y = v => T + (H - T - B) * (1 - v / hi);
+  let bars = "";
+  groups.forEach((name, k) => {
+    [[g[k], "Looking at alcohol", 1], [p[k], "Time near alcohol", .45]].forEach(([v, lab, op], j) => {
+      if (v === null) return;
+      const x = gx(k) + j * (bw + gap);
+      bars += `<rect x="${x}" y="${y(v)}" width="${bw}" height="${Math.max(1, (H - B) - y(v))}" fill="var(--trigger)" fill-opacity="${op}" rx="2"><title>${lab}, ${name.toLowerCase()}: ${fmt(v, 1)} %</title></rect>`;
+      bars += `<text x="${x + bw / 2}" y="${y(v) - 4}" text-anchor="middle">${fmt(v, 0)}</text>`;
+    });
+    bars += `<text x="${gx(k) + bw + gap / 2}" y="${H - 8}" text-anchor="middle">${name}</text>`;
+  });
+  const ticks = [0, hi / 2, hi].map(v => `<line class="grid" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v, 0)}</text>`).join("");
+  return `<h3>Within this session</h3>
+    <div class="legend"><span><i style="background:var(--trigger)"></i>Looking at alcohol</span><span><i style="background:var(--trigger);opacity:.45"></i>Time near alcohol</span><span>% of each third</span></div>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Alcohol-related behaviour in the beginning, middle and end of the session">${ticks}${bars}</svg>
+    <p class="hint" style="margin:.4rem 0 0">A decrease within a session is not required for exposure to work, so read this as a description, not a success criterion.</p>`;
+}
+
+/* ── trend charts ────────────────────────── */
+const CHARTS = [
+  { title: "Craving", series: [["q_VAS_craving_pre", "Before exposure", "--quest", 0], ["q_VAS_craving_post", "After exposure", "--quest", 1]] },
+  { title: "Looking at objects (% of session)", series: [["gaze_trigger_dwell_pct", "Alcohol", "--trigger", 0], ["gaze_neutral_dwell_pct", "Neutral", "--neutral", 0]] },
+  { title: "Time near alcohol (% of session)", series: [["prox_trigger_zone_pct", "Within proximity radius", "--trigger", 0]] },
+  { title: "Bias values (0.50 = no preference)", ref: .5, range: [0, 1], series: [["gaze_bias_index", "Attention", "--trigger", 0], ["approach_bias_index", "Approach", "--trigger", 1]] },
+];
+
+function drawCharts(S) {
+  const box = $("#charts");
+  box.innerHTML = "";
+  for (const c of CHARTS) {
+    const ser = c.series.filter(([k]) => metric[k] && S.some(x => x.values[k] !== null));
+    if (!ser.length) continue;
+    const div = document.createElement("div");
+    div.className = "panel chart";
+    div.innerHTML = `<h4>${esc(c.title)}</h4><div class="legend">${ser.map(([, lab, col, dash]) =>
+      `<span><i style="background:var(${col});${dash ? "opacity:.55" : ""}"></i>${esc(lab)}</span>`).join("")}</div>` + lineChart(S, ser, c);
+    box.appendChild(div);
+  }
+  if (!box.children.length) box.innerHTML = `<p class="ok">Not enough data for trend charts yet.</p>`;
+}
+
+function lineChart(S, ser, c) {
+  const W = 480, H = 210, L = 40, R = 14, T = 12, B = 28;
+  const vals = ser.flatMap(([k]) => S.map(x => x.values[k])).filter(v => v !== null);
+  let lo = c.range ? c.range[0] : Math.min(0, ...vals), hi = c.range ? c.range[1] : Math.max(...vals);
+  if (hi === lo) hi = lo + 1;
+  if (!c.range) hi = niceCeil(hi * 1.08);
+  const x = i => L + (W - L - R) * (S.length === 1 ? .5 : i / (S.length - 1));
+  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const dec = hi - lo <= 2 ? 2 : 0;
+  let g = [0, .25, .5, .75, 1].map(f => lo + f * (hi - lo)).map(v =>
+    `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v, dec)}</text>`).join("");
+  g += S.map((s, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">S${s.n}</text>`).join("");
+  g += `<line class="selline" x1="${x(state.sel)}" x2="${x(state.sel)}" y1="${T}" y2="${H - B}"/>`;
+  if (c.ref !== undefined) g += `<line class="axis" stroke-dasharray="5 4" x1="${L}" x2="${W - R}" y1="${y(c.ref)}" y2="${y(c.ref)}"/>`;
+  for (const [k, lab, col, dash] of ser) {
+    const m = metric[k];
+    let d = "", pen = false;
+    S.forEach((s, i) => { const v = s.values[k]; if (v === null) { pen = false; return; } d += `${pen ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; });
+    g += `<path d="${d}" fill="none" stroke="var(${col})" stroke-width="2.2" ${dash ? 'stroke-dasharray="6 4" opacity=".75"' : ""}/>`;
+    S.forEach((s, i) => {
+      const v = s.values[k]; if (v === null) return;
+      g += `<circle class="pt" data-i="${i}" cx="${x(i)}" cy="${y(v)}" r="${i === state.sel ? 5.5 : 4}" fill="${dash ? "var(--surface)" : `var(${col})`}" stroke="var(${col})" stroke-width="2"><title>${esc(lab)}, session ${s.n}: ${fmt(v, m.dec)} ${esc(m.unit)}</title></circle>`;
+    });
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(c.title)} across sessions">${g}</svg>`;
+}
+function niceCeil(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); return Math.ceil(v / p * 2) / 2 * p; }
+
+/* ── interaction ─────────────────────────── */
+document.addEventListener("click", e => {
+  const pick = e.target.closest("[data-i]");
+  if (pick && $("#main").contains(pick)) { state.sel = +pick.dataset.i; render(); return; }
+  const h = e.target.closest("[data-help]");
+  if (h) { const k = h.dataset.help; state.open.has(k) ? state.open.delete(k) : state.open.add(k); render(); }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input")) return;
+  const n = DATA?.patients[state.pid]?.sessions.length || 0;
+  if (e.key === "ArrowLeft" && state.sel > 0) { state.sel--; render(); }
+  if (e.key === "ArrowRight" && state.sel < n - 1) { state.sel++; render(); }
+});
+function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  const pid = pids.includes(h) ? h : pids[0];
+  if (pid !== state.pid) { state.pid = pid; state.sel = pid ? DATA.patients[pid].sessions.length - 1 : 0; state.open.clear(); }
+  renderRail(); render();
+}
+window.addEventListener("hashchange", route);
+$("#gen").textContent = DATA ? `${pids.length} patient${pids.length === 1 ? "" : "s"}, updated ${DATA.generated}` : "";
+route();
+</script>
+</body>
+</html>
